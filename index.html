@@ -1,0 +1,117 @@
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+
+<style>
+.content{padding:2em;padding-top:5em;margin:auto;}
+@media screen and (min-width: 600px){
+  .content{width: 80%;}
+}
+@media screen and (min-width: 800px){
+  .card{width: 60%;}
+}
+</style>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+  <a class="navbar-brand" href="#" id="title">Cheap CTF</a>
+  <!--
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#NavOptions">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="NavOptions">
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a class="nav-link" href="#!listing">Problems</a>
+    </li>
+  </ul>
+  </div>  
+-->
+</nav>
+
+<div class="content">
+  <h1>About</h1>
+  This is for the JC2 Life Skills Seminar 2020 in NYJC by NYCompSci. Slides can be found <a href="https://docs.google.com/presentation/d/1KUAygtsyokXeJGiwyRl3A_nhrc8rXUtdoKmGTt8-xDs/edit?usp=sharing">here</a>.
+  <br/><br/>
+<h1>Challenges</h1>
+  <div id="challenges">
+  </div>
+  <br/>
+  <h2>Settings</h2>
+  <button type="button" class="btn btn-outline-danger" style="vertical-align: bottom;" onclick="reset()">Reset All Data</button>
+</div>
+<script>
+    //User Data
+var title = "NYCompSci 2020 Cryptography Challenges";
+var flagFormat = "NYCS{...}";
+var challengeList = [
+  {name:"Welcome",description:"Welcome to Cryptography! Just type the flag from the slides", hint:"NYCS{welcome_to_cryptography}",type:"Cryptography",flag:"NYCS{welcome_to_cryptography}"},
+  {name:"Basic Caesar Cipher Practice",description:"Use the Caesar Cipher to decode ALPF{v_ybir_fuvsgvat}", hint:"First letter is N}",type:"Cryptography",flag:"NYCS{i_love_shifting}"},
+    {name:"Basic Caesar Cipher Practice",description:"Decode this: Qeegkrofu zg qss afgvf sqvl gy qcoqzogf, zitkt ol fg vqn q wtt ligxsr wt qwst zg ysn. Ozl voful qkt zgg ldqss zg utz ozl yqz sozzst wgrn gyy zit ukgxfr. Zit wtt, gy egxklt, ysotl qfnvqn wteqxlt wttl rgf'z eqkt viqz ixdqfl ziofa ol odhgllowst.", hint:"This is a substitution cipher, qwertyuiopasdfghjklzxcvbnm",type:"Cryptography",flag:"According to all known laws of aviation, there is no way a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyway because bees don't care what humans think is impossible."},
+  {name:"Binary Practice",description:"10110101", hint:"Search up binary online",type:"Cryptography",flag:"181"},
+  {name:"Hexadecimal Practice",description:"6A6E", hint:"Search up hexadecimal online",type:"Cryptography",flag:"   27246"},
+  {name:"Convert base 8 Practice",description:"7077", hint:"",type:"Cryptography",flag:"3647"}
+];
+
+//Program Data///////////////////////////////////////////////////
+//Setting Parameters
+document.getElementById("title").innerHTML = title;
+if(typeof(String.prototype.trim) === "undefined"){String.prototype.trim = function() {return String(this).replace(/^\s+|\s+$/g, '');};}
+//Local Data
+var completedData = localStorage.getItem("completedChallenges");
+if (completedData==null){completedData="{}"}
+var completed = JSON.parse(completedData);
+function reset(){
+  if(confirm("Are you sure you want to reset all your progress?")){
+    localStorage.removeItem("completedChallenges");
+    refresh();
+  };
+}
+//Challenges
+function challengeLayout(id){
+  var challenge = challengeList[id];
+  var complete = completed[id];
+  return `
+  <div class="card" id="task-`+id+`" style="width:100%;">
+    <div class="card-header" id="task-`+id+`-name">
+      `+challenge.name+
+       '<span style="float: right;"> '+challenge.type+' - '+
+       (complete===true?
+          '<span style="color:green;">Completed</span>':
+          '<span style="color:red;">Not Completed</span>'
+       )+`</span>
+    </div>
+    <div class="card-body">
+      <div id="task-`+id+`-description">
+        `+challenge.description+`
+      </div>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="`+flagFormat+`" aria-label="Answer" aria-describedby="button-addon2" id="task-`+id+`-answer">
+        <div class="input-group-append"><button class="btn btn-outline-secondary" type="button" id="task-`+id+`-check" onclick="challengeHint(`+id+`)">Hint</button></div><button class="btn btn-outline-success" type="button" id="task-`+id+`-check" onclick="challengeCheck(`+id+`)">Submit</button></div>
+      </div>
+    </div>
+      
+  </div>
+  `;
+}
+function challengeHint(id){
+  alert("Hint: "+challengeList[id].hint);
+}
+function challengeCheck(id){
+  var challenge = challengeList[id];
+  if (document.getElementById("task-"+id+"-answer").value.trim()===challenge.flag){
+    alert("You got the correct answer");
+    completed[id]=true;
+    localStorage.setItem("completedChallenges", JSON.stringify(completed));
+    refresh();
+  }else{
+    alert("Fail");
+  }
+}
+function refresh(){
+  challenges = document.getElementById("challenges");
+  challenges.innerHTML="";
+  for(var challenge in challengeList){
+    challenges.innerHTML+= challengeLayout(challenge);
+  }  
+}
+refresh();
+</script>
